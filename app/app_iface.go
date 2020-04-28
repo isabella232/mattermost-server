@@ -853,6 +853,7 @@ type AppIface interface {
 	Session() *model.Session
 	SessionCacheLength() int
 	SessionHasPermissionTo(session model.Session, permission *model.Permission) bool
+	SessionHasPermissionToCategory(session model.Session, teamId, categoryId string) bool
 	SessionHasPermissionToChannel(session model.Session, channelId string, permission *model.Permission) bool
 	SessionHasPermissionToChannelByPost(session model.Session, postId string, permission *model.Permission) bool
 	SessionHasPermissionToTeam(session model.Session, teamId string, permission *model.Permission) bool

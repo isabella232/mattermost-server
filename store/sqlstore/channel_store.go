@@ -2084,6 +2084,21 @@ func (s SqlChannelStore) RemoveMembers(channelId string, userIds []string) *mode
 	if err != nil {
 		return model.NewAppError("SqlChannelStore.RemoveMember", "store.sql_channel.remove_member.app_error", nil, "channel_id="+channelId+", "+err.Error(), http.StatusInternalServerError)
 	}
+
+	// cleanup sidebarchannels table if the user is no longer a member of that channel
+	sql, args, err = s.getQueryBuilder().
+		Delete("SidebarChannels").
+		Where(sq.And{
+			sq.Eq{"ChannelId": channelId},
+			sq.Eq{"UserId": userIds},
+		}).ToSql()
+	if err != nil {
+		return model.NewAppError("SqlChannelStore.RemoveMember", "store.sql_channel.remove_member.app_error", nil, "channel_id="+channelId+", "+err.Error(), http.StatusInternalServerError)
+	}
+	_, err = s.GetMaster().Exec(sql, args...)
+	if err != nil {
+		return model.NewAppError("SqlChannelStore.RemoveMember", "store.sql_channel.remove_member.app_error", nil, "channel_id="+channelId+", "+err.Error(), http.StatusInternalServerError)
+	}
 	return nil
 }
 
@@ -3366,13 +3381,24 @@ func (s SqlChannelStore) CreateSidebarCategory(userId, teamId string, newCategor
 
 	defer finalizeTransaction(transaction)
 
+	sql, args, _ := s.getQueryBuilder().
+		Select("MAX(SortOrder)").
+		From("SidebarCategories").
+		Where(sq.And{
+			sq.Eq{"TeamId": teamId},
+			sq.Eq{"UserId": userId},
+		}).ToSql()
+	maxOrder, err := transaction.SelectInt(sql, args...)
+	if err != nil {
+		return nil, model.NewAppError("SqlPostStore.CreateSidebarCategory", "store.sql_channel.sidebar_categories.app_error", nil, err.Error(), http.StatusInternalServerError)
+	}
 	categoryId := model.NewId()
 	category := &model.SidebarCategory{
 		DisplayName: newCategory.DisplayName,
 		Id:          categoryId,
 		UserId:      userId,
 		TeamId:      teamId,
-		SortOrder:   0,
+		SortOrder:   maxOrder + model.MinimalSidebarSortDistance,
 		Type:        model.SidebarCategoryCustom,
 	}
 	if err = transaction.Insert(category); err != nil {
