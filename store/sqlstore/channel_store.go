@@ -3384,6 +3384,7 @@ func (s SqlChannelStore) CreateSidebarCategory(userId, teamId string, newCategor
 	sql, args, _ := s.getQueryBuilder().
 		Select("MAX(SortOrder)").
 		From("SidebarCategories").
+		GroupBy("SortOrder").
 		Where(sq.And{
 			sq.Eq{"TeamId": teamId},
 			sq.Eq{"UserId": userId},
