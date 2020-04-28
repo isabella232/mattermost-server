@@ -23,9 +23,6 @@ const (
 	WEBSOCKET_EVENT_CHANNEL_UPDATED                = "channel_updated"
 	WEBSOCKET_EVENT_CHANNEL_MEMBER_UPDATED         = "channel_member_updated"
 	WEBSOCKET_EVENT_CHANNEL_SCHEME_UPDATED         = "channel_scheme_updated"
-	WEBSOCKET_EVENT_SIDEBAR_CATEGORY_CREATED       = "sidebar_category_created"
-	WEBSOCKET_EVENT_SIDEBAR_CATEGORY_UPDATED       = "sidebar_category_updated"
-	WEBSOCKET_EVENT_SIDEBAR_CATEGORY_ORDER_UPDATED = "sidebar_category_order_updated"
 	WEBSOCKET_EVENT_DIRECT_ADDED                   = "direct_added"
 	WEBSOCKET_EVENT_GROUP_ADDED                    = "group_added"
 	WEBSOCKET_EVENT_NEW_USER                       = "new_user"
@@ -34,6 +31,7 @@ const (
 	WEBSOCKET_EVENT_UPDATE_TEAM                    = "update_team"
 	WEBSOCKET_EVENT_DELETE_TEAM                    = "delete_team"
 	WEBSOCKET_EVENT_RESTORE_TEAM                   = "restore_team"
+	WEBSOCKET_EVENT_UPDATE_TEAM_SCHEME             = "update_team_scheme"
 	WEBSOCKET_EVENT_USER_ADDED                     = "user_added"
 	WEBSOCKET_EVENT_USER_UPDATED                   = "user_updated"
 	WEBSOCKET_EVENT_USER_ROLE_UPDATED              = "user_role_updated"
@@ -59,6 +57,9 @@ const (
 	WEBSOCKET_EVENT_CONFIG_CHANGED                 = "config_changed"
 	WEBSOCKET_EVENT_OPEN_DIALOG                    = "open_dialog"
 	WEBSOCKET_EVENT_GUESTS_DEACTIVATED             = "guests_deactivated"
+	WEBSOCKET_EVENT_SIDEBAR_CATEGORY_CREATED       = "sidebar_category_created"
+	WEBSOCKET_EVENT_SIDEBAR_CATEGORY_UPDATED       = "sidebar_category_updated"
+	WEBSOCKET_EVENT_SIDEBAR_CATEGORY_ORDER_UPDATED = "sidebar_category_order_updated"
 )
 
 type WebSocketMessage interface {
