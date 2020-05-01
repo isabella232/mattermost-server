@@ -16,7 +16,7 @@ jobs:
           mkdir release
           cp bin/mattermost release/mattermost_linux_amd64
           cp bin/darwin_amd64/mattermost release/mattermost_darwin_amd64
-          cp bin/windows_amd64/mattermost release/mattermost_windows_amd64
+          cp bin/windows_amd64/mattermost.exe release/mattermost_windows_amd64.exe
       - name: Upload the artifacts
         uses: skx/github-action-publish-binaries@master
         env:
