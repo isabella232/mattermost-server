@@ -22,6 +22,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-asn1-ber/asn1-ber v1.4.1 // indirect
 	github.com/go-gorp/gorp v2.0.0+incompatible // indirect
+	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/golang/protobuf v1.4.0 // indirect
@@ -78,7 +79,7 @@ require (
 	github.com/prometheus/procfs v0.0.11 // indirect
 	github.com/rs/cors v1.7.0
 	github.com/rudderlabs/analytics-go v3.2.1+incompatible
-	github.com/russellhaering/goxmldsig v0.0.0-20180430223755-7acd5e4a6ef7
+	github.com/russellhaering/goxmldsig v0.0.0-20180430223755-7acd5e4a6ef7 // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/analytics-go v3.1.0+incompatible
 	github.com/segmentio/backo-go v0.0.0-20200129164019-23eae7c10bd3 // indirect
