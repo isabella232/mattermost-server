@@ -2672,6 +2672,7 @@ type Config struct {
 	JobSettings               JobSettings
 	PluginSettings            PluginSettings
 	DisplaySettings           DisplaySettings
+	RedisSettings             RedisSettings
 	GuestAccountsSettings     GuestAccountsSettings
 	ImageProxySettings        ImageProxySettings
 }
@@ -2831,6 +2832,9 @@ func (o *Config) IsValid() *AppError {
 	}
 
 	if err := o.ImageProxySettings.isValid(); err != nil {
+		return err
+	}
+	if err := o.RedisSettings.isValid(); err != nil {
 		return err
 	}
 	return nil
