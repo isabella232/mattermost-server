@@ -27,6 +27,7 @@ jobs:
         sh  mattermost-server/scripts/pre-build.sh
     - name: Build
       run: |
+        mv mattermost-enterpriseoss/enterprise .
         cd mattermost-server
         make build
     - name: Artifact
