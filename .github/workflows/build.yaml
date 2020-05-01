@@ -26,6 +26,10 @@ jobs:
         ls
         sh  mattermost-server/scripts/pre-build.sh
     - name: Build
-      run: make build
+      run: |
+        cd mattermost-server
+        make build
     - name: Artifact
-      run: ls -la bin
+      run: |
+        cd mattermost-server
+        ls -la bin
