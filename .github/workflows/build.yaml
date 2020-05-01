@@ -15,7 +15,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       with:
-        path: main
+        path: mattermost-server
     - name: Checkout enterprise repo
       uses: actions/checkout@v2
       with:
@@ -24,7 +24,7 @@ jobs:
     - name: Pre-build
       run:  |
         ls
-        sh  main/scripts/pre-build.sh
+        sh  mattermost-server/scripts/pre-build.sh
     - name: Build
       run: make build
     - name: Artifact
