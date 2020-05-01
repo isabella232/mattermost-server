@@ -27,6 +27,7 @@ func (w *Web) InitOAuth() {
 	// API version independent OAuth as a client endpoints
 	w.MainRouter.Handle("/oauth/{service:[A-Za-z0-9]+}/complete", w.ApiHandler(completeOAuth)).Methods("GET")
 	w.MainRouter.Handle("/oauth/{service:[A-Za-z0-9]+}/login", w.ApiHandler(loginWithOAuth)).Methods("GET")
+	w.MainRouter.Handle("/oauth/{service:[A-Za-z0-9]+}/token_login", w.ApiHandler(tokenLoginWithOAuth)).Methods("POST")
 	w.MainRouter.Handle("/oauth/{service:[A-Za-z0-9]+}/mobile_login", w.ApiHandler(mobileLoginWithOAuth)).Methods("GET")
 	w.MainRouter.Handle("/oauth/{service:[A-Za-z0-9]+}/signup", w.ApiHandler(signupWithOAuth)).Methods("GET")
 
@@ -350,6 +351,62 @@ func loginWithOAuth(c *Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, authUrl, http.StatusFound)
+}
+
+func tokenLoginWithOAuth(c *Context, w http.ResponseWriter, r *http.Request) {
+	c.RequireService()
+	if c.Err != nil {
+		return
+	}
+	props := model.MapFromJson(r.Body)
+
+	token := props["access_token"]
+
+	service := c.Params.Service
+	user, err := c.App.AuthenticateTokenForLogin(token, service)
+	if err != nil {
+		c.Err = err
+		return
+	}
+
+	if user.IsGuest() {
+		if c.App.License() == nil {
+			c.Err = model.NewAppError("login", "api.user.login.guest_accounts.license.error", nil, "", http.StatusUnauthorized)
+			return
+		}
+		if !*c.App.Config().GuestAccountsSettings.Enable {
+			c.Err = model.NewAppError("login", "api.user.login.guest_accounts.disabled.error", nil, "", http.StatusUnauthorized)
+			return
+		}
+	}
+
+	c.LogAuditWithUserId(user.Id, "authenticated")
+
+	err = c.App.DoLogin(w, r, user, "")
+	if err != nil {
+		c.Err = err
+		return
+	}
+
+	c.LogAuditWithUserId(user.Id, "success")
+
+	if r.Header.Get(model.HEADER_REQUESTED_WITH) == model.HEADER_REQUESTED_WITH_XML {
+		c.App.AttachSessionCookies(w, r)
+	}
+
+	userTermsOfService, err := c.App.GetUserTermsOfService(user.Id)
+	if err != nil && err.StatusCode != http.StatusNotFound {
+		c.Err = err
+		return
+	}
+
+	if userTermsOfService != nil {
+		user.TermsOfServiceId = userTermsOfService.TermsOfServiceId
+		user.TermsOfServiceCreateAt = userTermsOfService.CreateAt
+	}
+
+	user.Sanitize(map[string]bool{})
+	w.Write([]byte(user.ToJson()))
 }
 
 func mobileLoginWithOAuth(c *Context, w http.ResponseWriter, r *http.Request) {
