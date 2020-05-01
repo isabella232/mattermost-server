@@ -8,7 +8,6 @@ package store
 import (
 	"context"
 
-	goi18n "github.com/mattermost/go-i18n/i18n"
 	"github.com/mattermost/mattermost-server/v5/model"
 )
 
@@ -130,6 +129,7 @@ type ChannelStore interface {
 	CreateDirectChannel(userId *model.User, otherUserId *model.User) (*model.Channel, *model.AppError)
 	SaveDirectChannel(channel *model.Channel, member1 *model.ChannelMember, member2 *model.ChannelMember) (*model.Channel, *model.AppError)
 	Update(channel *model.Channel) (*model.Channel, *model.AppError)
+	UpdateSidebarChannelCategoryOnMove(channel *model.Channel, newTeamId string) *model.AppError
 	Get(id string, allowFromCache bool) (*model.Channel, *model.AppError)
 	InvalidateChannel(id string)
 	InvalidateChannelByName(teamId, name string)
@@ -206,7 +206,7 @@ type ChannelStore interface {
 	ClearAllCustomRoleAssignments() *model.AppError
 	MigratePublicChannels() error
 	MigrateDirectGroupMessagesToSidebarChannels(lastChannelId, lastUserId string, runningOrder int64) (map[string]interface{}, *model.AppError)
-	MigrateSidebarCategories(fromTeamId, fromUserId string, T goi18n.TranslateFunc) (map[string]interface{}, *model.AppError)
+	MigrateSidebarCategories(fromTeamId, fromUserId string) (map[string]interface{}, *model.AppError)
 	MigrateFavoritesToSidebarChannels(lastUserId string, runningOrder int64) (map[string]interface{}, *model.AppError)
 	MigrateChannelsToSidebarChannels(lastChannelId, lastUserId string, runningOrder int64) (map[string]interface{}, *model.AppError)
 	GetSidebarCategories(userId, teamId string) (*model.OrderedSidebarCategories, *model.AppError)

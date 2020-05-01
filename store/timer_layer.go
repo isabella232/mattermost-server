@@ -10,7 +10,6 @@ import (
 	"context"
 	timemodule "time"
 
-	goi18n "github.com/mattermost/go-i18n/i18n"
 	"github.com/mattermost/mattermost-server/v5/einterfaces"
 	"github.com/mattermost/mattermost-server/v5/model"
 )
@@ -1522,10 +1521,10 @@ func (s *TimerLayerChannelStore) MigratePublicChannels() error {
 	return resultVar0
 }
 
-func (s *TimerLayerChannelStore) MigrateSidebarCategories(fromTeamId string, fromUserId string, T goi18n.TranslateFunc) (map[string]interface{}, *model.AppError) {
+func (s *TimerLayerChannelStore) MigrateSidebarCategories(fromTeamId string, fromUserId string) (map[string]interface{}, *model.AppError) {
 	start := timemodule.Now()
 
-	resultVar0, resultVar1 := s.ChannelStore.MigrateSidebarCategories(fromTeamId, fromUserId, T)
+	resultVar0, resultVar1 := s.ChannelStore.MigrateSidebarCategories(fromTeamId, fromUserId)
 
 	elapsed := float64(timemodule.Since(start)) / float64(timemodule.Second)
 	if s.Root.Metrics != nil {
@@ -1998,6 +1997,22 @@ func (s *TimerLayerChannelStore) UpdateSidebarChannelByPreference(preference *mo
 			success = "true"
 		}
 		s.Root.Metrics.ObserveStoreMethodDuration("ChannelStore.UpdateSidebarChannelByPreference", success, elapsed)
+	}
+	return resultVar0
+}
+
+func (s *TimerLayerChannelStore) UpdateSidebarChannelCategoryOnMove(channel *model.Channel, newTeamId string) *model.AppError {
+	start := timemodule.Now()
+
+	resultVar0 := s.ChannelStore.UpdateSidebarChannelCategoryOnMove(channel, newTeamId)
+
+	elapsed := float64(timemodule.Since(start)) / float64(timemodule.Second)
+	if s.Root.Metrics != nil {
+		success := "false"
+		if resultVar0 == nil {
+			success = "true"
+		}
+		s.Root.Metrics.ObserveStoreMethodDuration("ChannelStore.UpdateSidebarChannelCategoryOnMove", success, elapsed)
 	}
 	return resultVar0
 }

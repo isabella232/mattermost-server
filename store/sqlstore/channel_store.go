@@ -15,12 +15,12 @@ import (
 	"github.com/pkg/errors"
 
 	sq "github.com/Masterminds/squirrel"
-	goi18n "github.com/mattermost/go-i18n/i18n"
 	"github.com/mattermost/mattermost-server/v5/einterfaces"
 	"github.com/mattermost/mattermost-server/v5/mlog"
 	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/services/cache/lru"
 	"github.com/mattermost/mattermost-server/v5/store"
+	"github.com/mattermost/mattermost-server/v5/utils"
 )
 
 const (
@@ -424,10 +424,11 @@ func (s SqlChannelStore) createIndexesIfNotExists() {
 
 // MigrateSidebarCategories creates 3 initial categories for all existing user/team pairs
 // **IMPORTANT** This function should only be called from the migration task and shouldn't be used by itself
-func (s SqlChannelStore) MigrateSidebarCategories(fromTeamId, fromUserId string, T goi18n.TranslateFunc) (map[string]interface{}, *model.AppError) {
+func (s SqlChannelStore) MigrateSidebarCategories(fromTeamId, fromUserId string) (map[string]interface{}, *model.AppError) {
 	var userTeamMap []struct {
 		UserId string
 		TeamId string
+		Locale string
 	}
 
 	transaction, err := s.GetMaster().Begin()
@@ -437,7 +438,7 @@ func (s SqlChannelStore) MigrateSidebarCategories(fromTeamId, fromUserId string,
 
 	defer finalizeTransaction(transaction)
 
-	if _, err := transaction.Select(&userTeamMap, "SELECT TeamId, UserId FROM TeamMembers WHERE (TeamId, UserId) > (:FromTeamId, :FromUserId) ORDER BY TeamId, UserId LIMIT 100", map[string]interface{}{"FromTeamId": fromTeamId, "FromUserId": fromUserId}); err != nil {
+	if _, err := transaction.Select(&userTeamMap, "SELECT TeamId, UserId, Users.Locale FROM TeamMembers LEFT JOIN Users ON Users.Id=UserId WHERE (TeamId, UserId) > (:FromTeamId, :FromUserId) ORDER BY TeamId, UserId LIMIT 100", map[string]interface{}{"FromTeamId": fromTeamId, "FromUserId": fromUserId}); err != nil {
 		return nil, model.NewAppError("SqlChannelStore.MigrateSidebarCategories", "store.sql_channel.migrate_categories.select.app_error", nil, err.Error(), http.StatusInternalServerError)
 	}
 
@@ -447,6 +448,7 @@ func (s SqlChannelStore) MigrateSidebarCategories(fromTeamId, fromUserId string,
 	}
 
 	for _, u := range userTeamMap {
+		T := utils.GetUserTranslations(u.Locale)
 		if err := transaction.Insert(&model.SidebarCategory{
 			DisplayName: T("sidebar.category.favorites"),
 			Id:          model.NewId(),
@@ -3468,9 +3470,7 @@ func (s SqlChannelStore) GetSidebarCategory(userId, teamId, categoryId string) (
 		Select("*", "SidebarChannels.ChannelId").
 		From("SidebarCategories, SidebarChannels").
 		Where(sq.And{
-			sq.Eq{"SidebarCategories.UserId": userId},
-			sq.Eq{"SidebarCategories.TeamId": teamId},
-			sq.Eq{"SidebarChannels.CategoryId": "SidebarCategories.Id"},
+			sq.Eq{"SidebarChannels.CategoryId": categoryId},
 			sq.Eq{"SidebarCategories.Id": categoryId},
 		}).
 		OrderBy("SidebarChannels.SortOrder ASC").ToSql()
@@ -3662,10 +3662,10 @@ func (s SqlChannelStore) UpdateSidebarChannelByPreference(preference *model.Pref
 
 	switch preference.Category {
 	case model.PREFERENCE_CATEGORY_FAVORITE_CHANNEL:
-		params["CategoryType"] = "F"
+		params["CategoryType"] = model.SidebarCategoryFavorites
 	case model.PREFERENCE_CATEGORY_DIRECT_CHANNEL_SHOW:
 	case model.PREFERENCE_CATEGORY_GROUP_CHANNEL_SHOW:
-		params["CategoryType"] = "D"
+		params["CategoryType"] = model.SidebarCategoryDirectMessages
 	}
 	// if new preference is false - remove the channel from the appropriate sidebar category
 	if preference.Value == "false" {
@@ -3678,5 +3678,10 @@ func (s SqlChannelStore) UpdateSidebarChannelByPreference(preference *model.Pref
 			return model.NewAppError("SqlChannelStore.UpdateSidebarChannelByPreference", "store.sql_channel.sidebar_categories.app_error", nil, err.Error(), http.StatusInternalServerError)
 		}
 	}
+	return nil
+}
+
+func (s SqlChannelStore) UpdateSidebarChannelCategoryOnMove(channel *model.Channel, newTeamId string) *model.AppError {
+	// update all channels in sidebachannels with channeId=channel.Id and sidebarchannels.CategoryId=sidebarcategory.Id
 	return nil
 }

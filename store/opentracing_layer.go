@@ -9,7 +9,6 @@ package store
 import (
 	"context"
 
-	goi18n "github.com/mattermost/go-i18n/i18n"
 	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/services/tracing"
 	"github.com/opentracing/opentracing-go/ext"
@@ -1625,7 +1624,7 @@ func (s *OpenTracingLayerChannelStore) MigratePublicChannels() error {
 	return resultVar0
 }
 
-func (s *OpenTracingLayerChannelStore) MigrateSidebarCategories(fromTeamId string, fromUserId string, T goi18n.TranslateFunc) (map[string]interface{}, *model.AppError) {
+func (s *OpenTracingLayerChannelStore) MigrateSidebarCategories(fromTeamId string, fromUserId string) (map[string]interface{}, *model.AppError) {
 	origCtx := s.Root.Store.Context()
 	span, newCtx := tracing.StartSpanWithParentByContext(s.Root.Store.Context(), "ChannelStore.MigrateSidebarCategories")
 	s.Root.Store.SetContext(newCtx)
@@ -1634,7 +1633,7 @@ func (s *OpenTracingLayerChannelStore) MigrateSidebarCategories(fromTeamId strin
 	}()
 
 	defer span.Finish()
-	resultVar0, resultVar1 := s.ChannelStore.MigrateSidebarCategories(fromTeamId, fromUserId, T)
+	resultVar0, resultVar1 := s.ChannelStore.MigrateSidebarCategories(fromTeamId, fromUserId)
 	if resultVar1 != nil {
 		span.LogFields(spanlog.Error(resultVar1))
 		ext.Error.Set(span, true)
@@ -2157,6 +2156,24 @@ func (s *OpenTracingLayerChannelStore) UpdateSidebarChannelByPreference(preferen
 
 	defer span.Finish()
 	resultVar0 := s.ChannelStore.UpdateSidebarChannelByPreference(preference)
+	if resultVar0 != nil {
+		span.LogFields(spanlog.Error(resultVar0))
+		ext.Error.Set(span, true)
+	}
+
+	return resultVar0
+}
+
+func (s *OpenTracingLayerChannelStore) UpdateSidebarChannelCategoryOnMove(channel *model.Channel, newTeamId string) *model.AppError {
+	origCtx := s.Root.Store.Context()
+	span, newCtx := tracing.StartSpanWithParentByContext(s.Root.Store.Context(), "ChannelStore.UpdateSidebarChannelCategoryOnMove")
+	s.Root.Store.SetContext(newCtx)
+	defer func() {
+		s.Root.Store.SetContext(origCtx)
+	}()
+
+	defer span.Finish()
+	resultVar0 := s.ChannelStore.UpdateSidebarChannelCategoryOnMove(channel, newTeamId)
 	if resultVar0 != nil {
 		span.LogFields(spanlog.Error(resultVar0))
 		ext.Error.Set(span, true)

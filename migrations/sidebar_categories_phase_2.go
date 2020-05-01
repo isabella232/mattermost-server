@@ -89,7 +89,7 @@ func (worker *Worker) runSidebarCategoriesPhase2Migration(lastDone string) (bool
 	var nextStep ProgressStep
 	switch progress.CurrentStep {
 	case StepCategories:
-		result, err = worker.app.Srv().Store.Channel().MigrateSidebarCategories(progress.LastTeamId, progress.LastUserId, worker.app.GetT())
+		result, err = worker.app.Srv().Store.Channel().MigrateSidebarCategories(progress.LastTeamId, progress.LastUserId)
 		nextStep = StepChannels
 	case StepChannels:
 		result, err = worker.app.Srv().Store.Channel().MigrateChannelsToSidebarChannels(progress.LastChannelId, progress.LastUserId, progress.LastSortOrder)
@@ -117,7 +117,10 @@ func (worker *Worker) runSidebarCategoriesPhase2Migration(lastDone string) (bool
 
 	progress.LastTeamId = result["TeamId"].(string)
 	progress.LastUserId = result["UserId"].(string)
-	progress.LastChannelId = result["ChannelId"].(string)
+	progress.LastChannelId = strings.Repeat("0", 26)
+	if result["ChannelId"] != nil {
+		progress.LastChannelId = result["ChannelId"].(string)
+	}
 	progress.LastSortOrder = result["SortOrder"].(int64)
 	return false, progress.ToJson(), nil
 }
