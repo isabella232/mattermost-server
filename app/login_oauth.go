@@ -2,7 +2,6 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -60,14 +59,10 @@ func (a *App) AuthenticateTokenForLogin(token string, service string) (user *mod
 	user, err = a.GetUserForLogin("", email)
 	split := strings.Split(email, "@")
 	trusted := split[1] == *(sso.TrustedDomain)
-	fmt.Println(name, email)
 	if err != nil && trusted {
 		user := model.User{Email: email, Nickname: name, Username: model.NewId(), Roles: model.SYSTEM_USER_ROLE_ID} //Username: GenerateTestUsername(), Roles: model.SYSTEM_USER_ROLE_ID}
-		fmt.Println(user)
 		var ruser *model.User
 		ruser, err = a.CreateUserFromSignup(&user)
-		fmt.Println(ruser)
-		fmt.Println(err)
 		return ruser, nil
 	} else if err != nil {
 		return nil, err
