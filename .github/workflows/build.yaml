@@ -22,7 +22,7 @@ jobs:
         repository: bettermost/mattermost-enterpriseoss
         path: mattermost-enterpriseoss
     - name: Pre-build
-      run:  go mod vendor
+      run:  sh ./scripts/pre-build.sh
     - name: Build
       run: make build
     - name: Artifact
