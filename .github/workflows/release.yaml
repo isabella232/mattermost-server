@@ -7,12 +7,27 @@ jobs:
     name: Create release-artifacts
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@master
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: mattermost-server
+      - name: Checkout enterprise repo
+        uses: actions/checkout@v2
+        with:
+          repository: bettermost/mattermost-enterpriseoss
+          path: mattermost-enterpriseoss
+      - name: Pre-build
+        run:  |
+          ls
+          sh  mattermost-server/scripts/pre-build.sh
       - name: Build
-        run: make build
+        run: |
+          mv mattermost-enterpriseoss/enterprise .
+          cd mattermost-server
+          make build
       - name: Create Artifacts
         run: |
+          cd mattermost-server
           mkdir release
           cp bin/mattermost release/mattermost_linux_amd64
           cp bin/darwin_amd64/mattermost release/mattermost_darwin_amd64
