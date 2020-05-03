@@ -1,0 +1,36 @@
+on: [push, pull_request]
+name: Build
+jobs:
+  Build:
+    strategy:
+      matrix:
+        go-version: [1.14.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go-version }}
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        path: mattermost-server
+    - name: Checkout enterprise repo
+      uses: actions/checkout@v2
+      with:
+        repository: bettermost/mattermost-enterpriseoss
+        path: mattermost-enterpriseoss
+    - name: Pre-build
+      run:  |
+        ls
+        sh  mattermost-server/scripts/pre-build.sh
+    - name: Build
+      run: |
+        mv mattermost-enterpriseoss/enterprise .
+        cd mattermost-server
+        make build
+    - name: Artifact
+      run: |
+        cd mattermost-server
+        ls -la bin
