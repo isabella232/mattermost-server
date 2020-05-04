@@ -15,6 +15,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: mattermost-server
+      - name: Checkout client repo
+        uses: actions/checkout@v2
+        with:
+          repository: bettermost/mattermost-webapp
+          path: mattermost-webapp
       - name: Checkout enterprise repo
         uses: actions/checkout@v2
         with:
@@ -29,15 +34,17 @@ jobs:
           mv mattermost-enterpriseoss/enterprise .
           cd mattermost-server
           make build
+          make build-client
+          make package
       - name: Create Artifacts
         run: |
           mkdir release
-          cp mattermost-server/bin/mattermost release/mattermost_linux_amd64
-          cp mattermost-server/bin/darwin_amd64/mattermost release/mattermost_darwin_amd64
-          cp mattermost-server/bin/windows_amd64/mattermost.exe release/mattermost_windows_amd64.exe
+          cp mattermost-server/dist/mattermost-enterprise-osx-amd64.tar.gz release/bettermost-oss-osx-amd64.tar.gz
+          cp mattermost-server/dist/mattermost-enterprise-linux-amd64.tar.gz release/bettermost-oss-linux-amd64.tar.gz
+          cp mattermost-server/dist/mattermost-enterprise-windows-amd64.zip release/bettermost-oss-windows-amd64.zip
       - name: Upload the artifacts
         uses: skx/github-action-publish-binaries@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: 'release/mattermost*'
+          args: 'release/bettermost*'
