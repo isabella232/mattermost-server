@@ -39,12 +39,12 @@ jobs:
       - name: Create Artifacts
         run: |
           mkdir release
-          cp mattermost-server/dist/mattermost-enterprise-osx-amd64.tar.gz release/mattermost-enterprise-osx-amd64.tar.gz
-          cp mattermost-server/dist/mattermost-enterprise-linux-amd64.tar.gz release/mattermost-enterprise-linux-amd64.tar.gz
-          cp mattermost-server/dist/mattermost-enterprise-windows-amd64.zip release/mattermost-enterprise-windows-amd64.zip
+          cp mattermost-server/dist/mattermost-enterprise-osx-amd64.tar.gz release/bettermost-oss-osx-amd64.tar.gz
+          cp mattermost-server/dist/mattermost-enterprise-linux-amd64.tar.gz release/bettermost-oss-linux-amd64.tar.gz
+          cp mattermost-server/dist/mattermost-enterprise-windows-amd64.zip release/bettermost-oss-windows-amd64.zip
       - name: Upload the artifacts
         uses: skx/github-action-publish-binaries@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: 'release/mattermost*'
+          args: 'release/bettermost*'
