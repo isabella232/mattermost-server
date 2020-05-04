@@ -27,7 +27,7 @@ jobs:
       - name: Build
         run: |
           mv mattermost-enterpriseoss/enterprise .
-          sudo apt intsall zip
+          sudo apt install zip
           sudo apt install unzip
           cd mattermost-server
           make build
