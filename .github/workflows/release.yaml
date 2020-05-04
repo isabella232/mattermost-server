@@ -15,6 +15,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: mattermost-server
+      - name: Checkout client repo
+        uses: actions/checkout@v2
+        with:
+          repository: bettermost/mattermost-webapp
+          path: mattermost-webapp
       - name: Checkout enterprise repo
         uses: actions/checkout@v2
         with:
@@ -27,8 +32,6 @@ jobs:
       - name: Build
         run: |
           mv mattermost-enterpriseoss/enterprise .
-          sudo apt install zip
-          sudo apt install unzip
           cd mattermost-server
           make build
           make build-client
