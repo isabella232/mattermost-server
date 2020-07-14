@@ -2656,6 +2656,7 @@ type Config struct {
 	ThemeSettings             ThemeSettings
 	GitLabSettings            SSOSettings
 	GoogleSettings            SSOSettings
+	OAuthSettings             map[string]OAuthProviderSettings
 	Office365Settings         Office365Settings
 	LdapSettings              LdapSettings
 	ComplianceSettings        ComplianceSettings

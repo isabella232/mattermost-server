@@ -1401,6 +1401,24 @@ func sendPasswordReset(c *Context, w http.ResponseWriter, r *http.Request) {
 	ReturnStatusOK(w)
 }
 
+func SSOEnabled(c *Context) bool {
+	config := c.App.Config()
+	samlEnabled := *config.SamlSettings.Enable
+	gitlabEnabled := *config.GetSSOService("gitlab").Enable
+	googleEnabled := *config.GetSSOService("google").Enable
+	office365Enabled := *config.Office365Settings.Enable
+	ssoEnabled := config.OAuthSettings
+	for _, serviceJSON := range ssoEnabled {
+		if *serviceJSON.Enable == true {
+			return true
+		}
+	}
+	if samlEnabled || gitlabEnabled || googleEnabled || office365Enabled {
+		return true
+	}
+	return false
+}
+
 func login(c *Context, w http.ResponseWriter, r *http.Request) {
 	// Mask all sensitive errors, with the exception of the following
 	defer func() {
@@ -1436,12 +1454,9 @@ func login(c *Context, w http.ResponseWriter, r *http.Request) {
 		config := c.App.Config()
 		enableUsername := *config.EmailSettings.EnableSignInWithUsername
 		enableEmail := *config.EmailSettings.EnableSignInWithEmail
-		samlEnabled := *config.SamlSettings.Enable
-		gitlabEnabled := *config.GetSSOService("gitlab").Enable
-		googleEnabled := *config.GetSSOService("google").Enable
-		office365Enabled := *config.Office365Settings.Enable
+		ssoEnabled := SSOEnabled(c)
 
-		if samlEnabled || gitlabEnabled || googleEnabled || office365Enabled {
+		if ssoEnabled {
 			c.Err = model.NewAppError("login", "api.user.login.invalid_credentials_sso", nil, "", http.StatusUnauthorized)
 			return
 		}
