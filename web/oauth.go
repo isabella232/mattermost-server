@@ -379,10 +379,10 @@ func tokenLoginWithOAuth(c *Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.IsGuest() {
-		if c.App.License() == nil {
-			c.Err = model.NewAppError("login", "api.user.login.guest_accounts.license.error", nil, "", http.StatusUnauthorized)
-			return
-		}
+		// if c.App.License() == nil {
+		// 	c.Err = model.NewAppError("login", "api.user.login.guest_accounts.license.error", nil, "", http.StatusUnauthorized)
+		// 	return
+		// }
 		if !*c.App.Config().GuestAccountsSettings.Enable {
 			c.Err = model.NewAppError("login", "api.user.login.guest_accounts.disabled.error", nil, "", http.StatusUnauthorized)
 			return
@@ -391,7 +391,7 @@ func tokenLoginWithOAuth(c *Context, w http.ResponseWriter, r *http.Request) {
 
 	c.LogAuditWithUserId(user.Id, "authenticated")
 
-	err = c.App.DoLogin(w, r, user, "")
+	err = c.App.DoLogin(w, r, user, "", false, false, false)
 	if err != nil {
 		c.Err = err
 		return

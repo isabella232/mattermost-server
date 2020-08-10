@@ -22,13 +22,13 @@ import (
 )
 
 var publicKey []byte = []byte(`-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyZmShlU8Z8HdG0IWSZ8r
-tSyzyxrXkJjsFUf0Ke7bm/TLtIggRdqOcUF3XEWqQk5RGD5vuq7Rlg1zZqMEBk8N
-EZeRhkxyaZW8pLjxwuBUOnXfJew31+gsTNdKZzRjrvPumKr3EtkleuoxNdoatu4E
-HrKmR/4Yi71EqAvkhk7ZjQFuF0osSWJMEEGGCSUYQnTEqUzcZSh1BhVpkIkeu8Kk
-1wCtptODixvEujgqVe+SrE3UlZjBmPjC/CL+3cYmufpSNgcEJm2mwsdaXp2OPpfn
-a0v85XL6i9ote2P+fLZ3wX9EoioHzgdgB7arOxY50QRJO7OyCqpKFKv6lRWTXuSt
-hwIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAroJikkbgLTAgWVvXZC+R
+ihaIVFWfDiwKWB7S6Szand/+o7MTJ/QccSZ1Y7B9Bk36D7xntFyomfD79o8OGdYq
+QQlbney1EzOGb7Grsf4T2OIE7yhIYi/but8FPGCtcsu+rwPRxU22URwO0oN+MSB9
+cEFYp2pFI5mOO0eZpSYUnNgHYh/omJjjslA6zmQAylEw2MuFd3Au49+ebuZO4pBQ
+ybplCcvQuwFYVNv5PgzFk8EkYIsXYH0FU4h9VJSCkEK0Tb3DSGaKE4bSkEEpKaLF
+qcDs9W11oPEWQYchgTbr7L/txvmfB1ZMgj12b1aOpbf3G1t9L7HbyBAtZBEMo5Ch
+jwIDAQAB
 -----END PUBLIC KEY-----`)
 
 func ValidateLicense(signed []byte) (bool, string) {
