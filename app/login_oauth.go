@@ -29,6 +29,7 @@ func (a *App) AuthenticateTokenForLogin(token string, service string) (user *mod
 	// Send req using http Client
 	client := &http.Client{}
 	resp, httperr := client.Do(req)
+	redirect := req.URL.Query().Get("r")
 
 	if httperr != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return nil, model.NewAppError("createSessionForUserAccessToken", "app.user_access_token.invalid_or_missing", nil, "", http.StatusForbidden)
@@ -62,7 +63,7 @@ func (a *App) AuthenticateTokenForLogin(token string, service string) (user *mod
 	if err != nil && trusted {
 		user := model.User{Email: email, Nickname: name, Username: model.NewId(), Roles: model.SYSTEM_USER_ROLE_ID} //Username: GenerateTestUsername(), Roles: model.SYSTEM_USER_ROLE_ID}
 		var ruser *model.User
-		ruser, err = a.CreateUserFromSignup(&user)
+		ruser, err = a.CreateUserFromSignup(&user, redirect)
 		return ruser, nil
 	} else if err != nil {
 		return nil, err
