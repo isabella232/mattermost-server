@@ -6,6 +6,7 @@ package app
 import (
 	"github.com/mattermost/mattermost-server/v5/mlog"
 	"github.com/mattermost/mattermost-server/v5/model"
+	"fmt"
 )
 
 func (a *App) AddStatusCacheSkipClusterSend(status *model.Status) {
@@ -224,6 +225,15 @@ func (a *App) BroadcastStatus(status *model.Status) {
 		// this is considered a non-critical service and will be disabled when server busy.
 		return
 	}
+	if(status.TeamFlag != nil && status.TeamFlag == true) {
+		fmt.Println("HAOHOHO")
+		teams := a.GetTeamsForUser(status.UserId)
+		for i, t := range teams {
+			event := model.NewWebSocketEvent(model.WEBSOCKET_EVENT_STATUS_CHANGE_TEAM, t.Id, "", "", nil)
+			event.Add("status", status.Status)
+			event.Add("user_id", status.UserId)
+		}
+	}
 	event := model.NewWebSocketEvent(model.WEBSOCKET_EVENT_STATUS_CHANGE, "", "", status.UserId, nil)
 	event.Add("status", status.Status)
 	event.Add("user_id", status.UserId)
@@ -300,7 +310,9 @@ func (a *App) SaveAndBroadcastStatus(status *model.Status) {
 	if err := a.Srv().Store.Status().SaveOrUpdate(status); err != nil {
 		mlog.Error("Failed to save status", mlog.String("user_id", status.UserId), mlog.Err(err))
 	}
-
+	if a.Config().ServiceSettings.EnableStatusChangeBroadcast == true {
+		status.TeamFlag = true
+	}
 	a.BroadcastStatus(status)
 }
 

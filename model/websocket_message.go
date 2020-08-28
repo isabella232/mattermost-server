@@ -42,6 +42,7 @@ const (
 	WEBSOCKET_EVENT_PREFERENCES_DELETED                      = "preferences_deleted"
 	WEBSOCKET_EVENT_EPHEMERAL_MESSAGE                        = "ephemeral_message"
 	WEBSOCKET_EVENT_STATUS_CHANGE                            = "status_change"
+	WEBSOCKET_EVENT_STATUS_CHANGE_TEAM                       = "status_change_team"
 	WEBSOCKET_EVENT_HELLO                                    = "hello"
 	WEBSOCKET_AUTHENTICATION_CHALLENGE                       = "authentication_challenge"
 	WEBSOCKET_EVENT_REACTION_ADDED                           = "reaction_added"

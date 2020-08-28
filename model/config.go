@@ -277,6 +277,7 @@ type ServiceSettings struct {
 	EnablePostIconOverride                            *bool
 	EnableLinkPreviews                                *bool
 	EnableTesting                                     *bool   `restricted:"true"`
+	EnableStatusChangeBroadcast                       *bool   `restricted:"false"`
 	EnableDeveloper                                   *bool   `restricted:"true"`
 	EnableOpenTracing                                 *bool   `restricted:"true"`
 	EnableSecurityFixAlert                            *bool   `restricted:"true"`
@@ -592,6 +593,10 @@ func (s *ServiceSettings) SetDefaults(isUpdate bool) {
 
 	if s.AllowCorsFrom == nil {
 		s.AllowCorsFrom = NewString(SERVICE_SETTINGS_DEFAULT_ALLOW_CORS_FROM)
+	}
+
+	if s.EnableStatusChangeBroadcast == nil {
+		s.EnableStatusChangeBroadcast = NewBool(false)
 	}
 
 	if s.CorsExposedHeaders == nil {

@@ -30,6 +30,7 @@ require (
 	github.com/glycerine/go-unsnap-stream v0.0.0-20190901134440-81cf024a9e0a // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.1 // indirect
 	github.com/go-gorp/gorp v2.2.0+incompatible // indirect
+	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/google/uuid v1.1.1 // indirect
@@ -54,7 +55,6 @@ require (
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/jmoiron/sqlx v1.2.0
-	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/klauspost/cpuid v1.3.0 // indirect
 	github.com/lib/pq v1.7.0
 	github.com/magiconair/properties v1.8.1 // indirect
@@ -86,7 +86,6 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/poy/onpar v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.7.1
-	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20190728182440-6a916e37a237 // indirect
 	github.com/rs/cors v1.7.0
 	github.com/rudderlabs/analytics-go v3.2.1+incompatible
@@ -137,5 +136,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.3 // indirect
 	willnorris.com/go/imageproxy v0.10.0
-	github.com/go-redis/redis v6.15.7+incompatible
 )
