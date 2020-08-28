@@ -2113,7 +2113,7 @@ func (a *App) SetActiveChannel(userId string, channelId string) *model.AppError 
 	a.AddStatusCache(status)
 
 	if status.Status != oldStatus {
-		a.BroadcastStatus(status)
+		a.BroadcastStatus(status, false)
 	}
 
 	return nil
