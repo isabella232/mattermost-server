@@ -25,7 +25,6 @@ type Status struct {
 	Manual         bool   `json:"manual"`
 	LastActivityAt int64  `json:"last_activity_at"`
 	ActiveChannel  string `json:"active_channel,omitempty" db:"-"`
-	TeamFlag	   bool   `json:"team_flag"`
 }
 
 func (o *Status) ToJson() string {

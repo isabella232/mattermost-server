@@ -216,23 +216,23 @@ func (a *App) SetStatusOnline(userId string, manual bool) {
 	}
 
 	if broadcast {
-		a.BroadcastStatus(status)
+		a.BroadcastStatus(status, false)
 	}
 }
 
-func (a *App) BroadcastStatus(status *model.Status) {
+func (a *App) BroadcastStatus(status *model.Status, broadcastFlag bool) {
 	if a.Srv().Busy.IsBusy() {
 		// this is considered a non-critical service and will be disabled when server busy.
 		return
 	}
-	if(status.TeamFlag == true) {
-		fmt.Println("HAOHOHO")
+	if(broadcastFlag == true) {
 		teams, err := a.GetTeamsForUser(status.UserId)
 		if err == nil {
-			for i, t := range teams {
+			for _, t := range teams {
 				event := model.NewWebSocketEvent(model.WEBSOCKET_EVENT_STATUS_CHANGE_TEAM, t.Id, "", "", nil)
 				event.Add("status", status.Status)
 				event.Add("user_id", status.UserId)
+				a.Publish(event)
 			}
 		}
 	}
@@ -312,10 +312,11 @@ func (a *App) SaveAndBroadcastStatus(status *model.Status) {
 	if err := a.Srv().Store.Status().SaveOrUpdate(status); err != nil {
 		mlog.Error("Failed to save status", mlog.String("user_id", status.UserId), mlog.Err(err))
 	}
+	broadcastFlag := false
 	if *a.Config().ServiceSettings.EnableStatusChangeBroadcast == true {
-		status.TeamFlag = true
+		broadcastFlag = true
 	}
-	a.BroadcastStatus(status)
+	a.BroadcastStatus(status,  broadcastFlag)
 }
 
 func (a *App) SetStatusOutOfOffice(userId string) {
