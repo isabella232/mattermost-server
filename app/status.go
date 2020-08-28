@@ -215,7 +215,11 @@ func (a *App) SetStatusOnline(userId string, manual bool) {
 	}
 
 	if broadcast {
-		a.BroadcastStatus(status, false)
+		broadcastFlag := false
+		if *a.Config().ServiceSettings.EnableStatusChangeBroadcast == true {
+			broadcastFlag = true
+		}
+		a.BroadcastStatus(status, broadcastFlag)
 	}
 }
 
