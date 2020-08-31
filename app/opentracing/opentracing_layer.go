@@ -753,7 +753,7 @@ func (a *OpenTracingAppLayer) AutocompleteUsersInTeam(teamId string, term string
 	return resultVar0, resultVar1
 }
 
-func (a *OpenTracingAppLayer) BroadcastStatus(status *model.Status, broadcastFlag bool) {
+func (a *OpenTracingAppLayer) BroadcastStatus(status *model.Status) {
 	origCtx := a.ctx
 	span, newCtx := tracing.StartSpanWithParentByContext(a.ctx, "app.BroadcastStatus")
 
@@ -765,7 +765,7 @@ func (a *OpenTracingAppLayer) BroadcastStatus(status *model.Status, broadcastFla
 	}()
 
 	defer span.Finish()
-	a.app.BroadcastStatus(status, false)
+	a.app.BroadcastStatus(status)
 }
 
 func (a *OpenTracingAppLayer) BuildPostReactions(postId string) (*[]app.ReactionImportData, *model.AppError) {
