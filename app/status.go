@@ -217,6 +217,9 @@ func (a *App) SetStatusOnline(userId string, manual bool) {
 	if broadcast {
 		a.BroadcastStatus(status)
 	}
+	if *a.Config().ServiceSettings.EnableStatusChangeBroadcast == true {
+		a.BroadcastStatusToTeam(status)
+	}
 }
 func (a *App) BroadcastStatusToTeam(status *model.Status) {
 	if a.Srv().Busy.IsBusy() {
