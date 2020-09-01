@@ -67,6 +67,7 @@ func (api *API) InitChannel() {
 	api.BaseRoutes.ChannelMembers.Handle("/ids", api.ApiSessionRequired(getChannelMembersByIds)).Methods("POST")
 	api.BaseRoutes.ChannelMembers.Handle("", api.ApiSessionRequired(addChannelMember)).Methods("POST")
 	api.BaseRoutes.ChannelMembersForUser.Handle("", api.ApiSessionRequired(getChannelMembersForUser)).Methods("GET")
+	api.BaseRoutes.ChannelAndMembersForTeam.Handle("", api.ApiSessionRequired(getChannelsAndMembersForTeam)).Methods("GET")
 	api.BaseRoutes.ChannelMember.Handle("", api.ApiSessionRequired(getChannelMember)).Methods("GET")
 	api.BaseRoutes.ChannelMember.Handle("", api.ApiSessionRequired(removeChannelMember)).Methods("DELETE")
 	api.BaseRoutes.ChannelMember.Handle("/roles", api.ApiSessionRequired(updateChannelMemberRoles)).Methods("PUT")
@@ -1231,6 +1232,31 @@ func getChannelMember(c *Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte(member.ToJson()))
+}
+
+func getChannelsAndMembersForTeam(c *Context, w http.ResponseWriter, r *http.Request) {
+	c.RequireTeamId()
+	if c.Err != nil {
+		return
+	}
+
+	if !c.App.SessionHasPermissionToTeam(*c.App.Session(), c.Params.TeamId, model.PERMISSION_VIEW_TEAM) {
+		c.SetPermissionError(model.PERMISSION_VIEW_TEAM)
+		return
+	}
+
+	if c.App.Session().UserId != c.Params.UserId && !c.App.SessionHasPermissionToTeam(*c.App.Session(), c.Params.TeamId, model.PERMISSION_MANAGE_SYSTEM) {
+		c.SetPermissionError(model.PERMISSION_MANAGE_SYSTEM)
+		return
+	}
+
+	members, err := c.App.GetChannelsAndMembersForTeam(c.Params.TeamId)
+	if err != nil {
+		c.Err = err
+		return
+	}
+	val, _ := json.Marshal(members)
+	w.Write([]byte(val))
 }
 
 func getChannelMembersForUser(c *Context, w http.ResponseWriter, r *http.Request) {

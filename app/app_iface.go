@@ -510,6 +510,7 @@ type AppIface interface {
 	GetChannelMemberCount(channelId string) (int64, *model.AppError)
 	GetChannelMembersByIds(channelId string, userIds []string) (*model.ChannelMembers, *model.AppError)
 	GetChannelMembersForUser(teamId string, userId string) (*model.ChannelMembers, *model.AppError)
+	GetChannelsAndMembersForTeam(teamId string) (map[string]model.ChannelMembers, *model.AppError)
 	GetChannelMembersForUserWithPagination(teamId, userId string, page, perPage int) ([]*model.ChannelMember, *model.AppError)
 	GetChannelMembersPage(channelId string, page, perPage int) (*model.ChannelMembers, *model.AppError)
 	GetChannelMembersTimezones(channelId string) ([]string, *model.AppError)

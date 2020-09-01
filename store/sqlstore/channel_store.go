@@ -2574,6 +2574,16 @@ func (s SqlChannelStore) GetMembersForUser(teamId string, userId string) (*model
 	return dbMembers.ToModel(), nil
 }
 
+func (s SqlChannelStore) GetChannelsAndMembersForTeam(teamId string) (*model.ChannelMembers, *model.AppError) {
+	var dbMembers channelMemberWithSchemeRolesList
+	_, err := s.GetReplica().Select(&dbMembers, "SELECT * from channelmembers cm JOIN channels c ON c.Id=cm.channelid where teamid = :TeamId", map[string]interface{}{"TeamId": teamId})
+	if err != nil {
+		return nil, model.NewAppError("SqlChannelStore.GetMembersForUser", "store.sql_channel.get_members.app_error", nil, "teamId="+teamId+", err="+err.Error(), http.StatusInternalServerError)
+	}
+
+	return dbMembers.ToModel(), nil
+}
+
 func (s SqlChannelStore) GetMembersForUserWithPagination(teamId, userId string, page, perPage int) (*model.ChannelMembers, *model.AppError) {
 	var dbMembers channelMemberWithSchemeRolesList
 	offset := page * perPage

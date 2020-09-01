@@ -1671,6 +1671,25 @@ func (a *App) GetChannelMembersForUser(teamId string, userId string) (*model.Cha
 	return a.Srv().Store.Channel().GetMembersForUser(teamId, userId)
 }
 
+func (a *App) GetChannelsAndMembersForTeam(teamId string) (map[string]model.ChannelMembers, *model.AppError) {
+	var retMap (map[string]model.ChannelMembers)
+	retMap = make(map[string]model.ChannelMembers)
+	members, err := a.Srv().Store.Channel().GetChannelsAndMembersForTeam(teamId)
+	if err == nil {
+		for _, member := range *members {
+			print(member.ChannelId)
+			if _, ok := retMap[member.ChannelId]; ok {
+				retMap[member.ChannelId] = append(retMap[member.ChannelId], member)
+			} else {
+				cms := model.ChannelMembers{}
+				cms = append(cms, member)
+				retMap[member.ChannelId] = cms
+			}
+		}
+	}
+	return retMap, err
+}
+
 func (a *App) GetChannelMembersForUserWithPagination(teamId, userId string, page, perPage int) ([]*model.ChannelMember, *model.AppError) {
 	m, err := a.Srv().Store.Channel().GetMembersForUserWithPagination(teamId, userId, page, perPage)
 	if err != nil {
