@@ -1040,6 +1040,31 @@ func (_m *ChannelStore) GetMembersForUser(teamId string, userId string) (*model.
 	return r0, r1
 }
 
+// GetChannelsAndMembersForTeam provides a mock function with given fields: teamId
+func (_m *ChannelStore) GetChannelsAndMembersForTeam(teamId string) (*model.ChannelMembers, *model.AppError) {
+	ret := _m.Called(teamId)
+
+	var r0 *model.ChannelMembers
+	if rf, ok := ret.Get(0).(func(string) *model.ChannelMembers); ok {
+		r0 = rf(teamId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.ChannelMembers)
+		}
+	}
+
+	var r1 *model.AppError
+	if rf, ok := ret.Get(1).(func(string) *model.AppError); ok {
+		r1 = rf(teamId)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*model.AppError)
+		}
+	}
+
+	return r0, r1
+}
+
 // GetMembersForUserWithPagination provides a mock function with given fields: teamId, userId, page, perPage
 func (_m *ChannelStore) GetMembersForUserWithPagination(teamId string, userId string, page int, perPage int) (*model.ChannelMembers, *model.AppError) {
 	ret := _m.Called(teamId, userId, page, perPage)
