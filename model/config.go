@@ -2783,6 +2783,7 @@ type Config struct {
 	PluginSettings            PluginSettings
 	DisplaySettings           DisplaySettings
 	RedisSettings             RedisSettings
+	SocketExporterSettings    SocketExporterSettings
 	GuestAccountsSettings     GuestAccountsSettings
 	ImageProxySettings        ImageProxySettings
 }

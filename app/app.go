@@ -44,6 +44,7 @@ type App struct {
 	searchEngine  *searchengine.Broker
 	messageExport einterfaces.MessageExportInterface
 	metrics       einterfaces.MetricsInterface
+	socketExport  einterfaces.GenericSocketExporter
 
 	httpService httpservice.HTTPService
 	imageProxy  *imageproxy.ImageProxy
@@ -474,6 +475,9 @@ func (a *App) Ldap() einterfaces.LdapInterface {
 }
 func (a *App) MessageExport() einterfaces.MessageExportInterface {
 	return a.messageExport
+}
+func (a *App) SocketExport() einterfaces.GenericSocketExporter {
+	return a.socketExport
 }
 func (a *App) Metrics() einterfaces.MetricsInterface {
 	return a.metrics
