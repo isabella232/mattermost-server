@@ -1245,11 +1245,6 @@ func getChannelsAndMembersForTeam(c *Context, w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if c.App.Session().UserId != c.Params.UserId && !c.App.SessionHasPermissionToTeam(*c.App.Session(), c.Params.TeamId, model.PERMISSION_MANAGE_SYSTEM) {
-		c.SetPermissionError(model.PERMISSION_MANAGE_SYSTEM)
-		return
-	}
-
 	members, err := c.App.GetChannelsAndMembersForTeam(c.Params.TeamId)
 	if err != nil {
 		c.Err = err

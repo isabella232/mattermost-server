@@ -41,8 +41,9 @@ func (rs *RedisSettings) isValid() *AppError {
 }
 
 type SocketExporterSettings struct {
-	Enable       *bool
-	Region       *string
-	StreamName   *string
-	PartitionKey *string
+	Enable            *bool
+	Region            *string
+	StreamName        *string
+	PartitionKey      *string
+	WhitelistedEvents *map[string]bool
 }
