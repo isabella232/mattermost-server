@@ -117,6 +117,13 @@ func (a *App) JoinDefaultChannels(teamId string, user *model.User, shouldBeAdmin
 		message.Add("team_id", channel.TeamId)
 		a.Publish(message)
 
+		if *a.Config().ServiceSettings.EnableUserAddedBroadcast == true {
+			message = model.NewWebSocketEvent(model.WEBSOCKET_EVENT_USER_ADDED_TEAM, channel.TeamId, "", "", nil)
+			message.Add("user_id", user.Id)
+			message.Add("team_id", channel.TeamId)
+			a.Publish(message)
+		}
+
 	}
 
 	return err
@@ -1296,6 +1303,13 @@ func (a *App) AddUserToChannel(user *model.User, channel *model.Channel) (*model
 	message.Add("team_id", channel.TeamId)
 	a.Publish(message)
 
+	if *a.Config().ServiceSettings.EnableUserAddedBroadcast == true {
+		message = model.NewWebSocketEvent(model.WEBSOCKET_EVENT_USER_ADDED_TEAM, channel.TeamId, "", "", nil)
+		message.Add("user_id", user.Id)
+		message.Add("team_id", channel.TeamId)
+		a.Publish(message)
+	}
+
 	return newMember, nil
 }
 
@@ -2077,6 +2091,13 @@ func (a *App) removeUserFromChannel(userIdToRemove string, removerUserId string,
 	userMsg.Add("channel_id", channel.Id)
 	userMsg.Add("remover_id", removerUserId)
 	a.Publish(userMsg)
+
+	if *a.Config().ServiceSettings.EnableUserRemovedBroadcast == true {
+		message = model.NewWebSocketEvent(model.WEBSOCKET_EVENT_USER_REMOVED_TEAM, channel.TeamId, "", "", nil)
+		message.Add("user_id", userIdToRemove)
+		message.Add("remover_id", removerUserId)
+		a.Publish(message)
+	}
 
 	return nil
 }

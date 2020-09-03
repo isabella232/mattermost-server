@@ -278,6 +278,8 @@ type ServiceSettings struct {
 	EnableLinkPreviews                                *bool
 	EnableTesting                                     *bool   `restricted:"true"`
 	EnableStatusChangeBroadcast                       *bool   `restricted:"false"`
+	EnableUserAddedBroadcast                          *bool   `restricted:"false"`
+	EnableUserRemovedBroadcast                        *bool   `restricted:"false"`
 	EnableDeveloper                                   *bool   `restricted:"true"`
 	EnableOpenTracing                                 *bool   `restricted:"true"`
 	EnableSecurityFixAlert                            *bool   `restricted:"true"`
