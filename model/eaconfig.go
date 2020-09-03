@@ -39,3 +39,10 @@ func (rs *RedisSettings) isValid() *AppError {
 	}
 	return nil
 }
+
+type SocketExporterSettings struct {
+	Enable       *bool
+	Region       *string
+	StreamName   *string
+	PartitionKey *string
+}

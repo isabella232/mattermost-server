@@ -167,6 +167,10 @@ func (s *Server) Publish(message *model.WebSocketEvent) {
 		s.Metrics.IncrementWebsocketEvent(message.EventType())
 	}
 
+	if *s.Config().SocketExporterSettings.Enable == true {
+		s.SocketExport.Export(s.Config(), message)
+	}
+
 	s.PublishSkipClusterSend(message)
 
 	if s.Cluster != nil {

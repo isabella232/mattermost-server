@@ -156,6 +156,7 @@ type Server struct {
 	DataRetention    einterfaces.DataRetentionInterface
 	Ldap             einterfaces.LdapInterface
 	MessageExport    einterfaces.MessageExportInterface
+	SocketExport     einterfaces.GenericSocketExporter
 	Metrics          einterfaces.MetricsInterface
 	Notification     einterfaces.NotificationInterface
 	Saml             einterfaces.SamlInterface
@@ -340,6 +341,13 @@ func NewServer(options ...Option) (*Server, error) {
 
 	if s.joinCluster && s.Cluster != nil {
 		s.Cluster.StartInterNodeCommunication()
+	}
+
+	if s.SocketExport == nil { //needs to be updated according to exporter, will update to einterface model in the future
+		s.SocketExport = &kinesisExporter{}
+	}
+	if *s.Config().SocketExporterSettings.Enable == true {
+		s.SocketExport.InitExporter(s.Config())
 	}
 
 	if err = s.ensureAsymmetricSigningKey(); err != nil {
