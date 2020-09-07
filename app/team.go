@@ -685,6 +685,13 @@ func (a *App) JoinUserToTeam(team *model.Team, user *model.User, userRequestorId
 	message.Add("user_id", user.Id)
 	a.Publish(message)
 
+	if *a.Config().ServiceSettings.EnableUserAddedToTeamBroadcast == true {
+		message := model.NewWebSocketEvent(model.WEBSOCKET_EVENT_ADDED_TO_TEAM, team.Id, "", "", nil)
+		message.Add("team_id", team.Id)
+		message.Add("user_id", user.Id)
+		a.Publish(message)
+	}
+
 	return nil
 }
 
