@@ -18,19 +18,20 @@ type kinesisExporter struct {
 	partitionKey    *string
 	whitelist       map[string]bool
 	kinesisInstance *kinesis.Kinesis
+	session         *session.Session
 }
 
 func (k *kinesisExporter) InitExporter(c *model.Config) {
 	k.region = c.SocketExporterSettings.Region
 	k.partitionKey = c.SocketExporterSettings.PartitionKey
-	sess := session.New(&aws.Config{Region: aws.String(*k.region)})
-	k.kinesisInstance = kinesis.New(sess)
+	k.session, _ = session.NewSession(&aws.Config{Region: aws.String(*k.region)})
+	k.kinesisInstance = kinesis.New(k.session)
 	k.streamName = c.SocketExporterSettings.StreamName
 	k.whitelist = *c.SocketExporterSettings.WhitelistedEvents
 }
 
 func (k *kinesisExporter) Export(c *model.Config, message *model.WebSocketEvent) bool {
-	if k.kinesisInstance == nil {
+	if k.kinesisInstance == nil || k.session == nil {
 		k.InitExporter(c)
 	}
 	if k.whitelist[message.EventType()] == true {
