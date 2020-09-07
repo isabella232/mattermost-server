@@ -117,7 +117,7 @@ func (a *App) JoinDefaultChannels(teamId string, user *model.User, shouldBeAdmin
 		message.Add("team_id", channel.TeamId)
 		a.Publish(message)
 
-		if *a.Config().ServiceSettings.EnableUserAddedBroadcast == true {
+		if *a.Config().ServiceSettings.EnableUserAddedToChannelBroadcast == true {
 			message = model.NewWebSocketEvent(model.WEBSOCKET_EVENT_USER_ADDED_TEAM, channel.TeamId, "", "", nil)
 			message.Add("user_id", user.Id)
 			message.Add("channel_id", channel.Id)
@@ -1304,7 +1304,7 @@ func (a *App) AddUserToChannel(user *model.User, channel *model.Channel) (*model
 	message.Add("team_id", channel.TeamId)
 	a.Publish(message)
 
-	if *a.Config().ServiceSettings.EnableUserAddedBroadcast == true {
+	if *a.Config().ServiceSettings.EnableUserAddedToChannelBroadcast == true {
 		message = model.NewWebSocketEvent(model.WEBSOCKET_EVENT_USER_ADDED_TEAM, channel.TeamId, "", "", nil)
 		message.Add("user_id", user.Id)
 		message.Add("channel_id", channel.Id)
