@@ -344,7 +344,7 @@ func NewServer(options ...Option) (*Server, error) {
 	}
 
 	if s.SocketExport == nil { //needs to be updated according to exporter, will update to einterface model in the future
-		s.SocketExport = &kinesisExporter{}
+		s.SocketExport = &sqsExporter{}
 	}
 	if *s.Config().SocketExporterSettings.Enable == true {
 		s.SocketExport.InitExporter(s.Config())
