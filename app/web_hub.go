@@ -184,7 +184,11 @@ func (s *Server) Publish(message *model.WebSocketEvent) {
 			message.EventType() == model.WEBSOCKET_EVENT_POST_EDITED ||
 			message.EventType() == model.WEBSOCKET_EVENT_DIRECT_ADDED ||
 			message.EventType() == model.WEBSOCKET_EVENT_GROUP_ADDED ||
-			message.EventType() == model.WEBSOCKET_EVENT_ADDED_TO_TEAM {
+			message.EventType() == model.WEBSOCKET_EVENT_ADDED_TO_TEAM ||
+			message.EventType() == model.WEBSOCKET_EVENT_STATUS_CHANGE_TEAM ||
+			message.EventType() == model.WEBSOCKET_EVENT_USER_ADDED_TEAM ||
+			message.EventType() == model.WEBSOCKET_EVENT_USER_REMOVED_TEAM ||
+			message.EventType() == model.WEBSOCKET_EVENT_ADDED_TO_TEAM_BROADCAST {
 			cm.SendType = model.CLUSTER_SEND_RELIABLE
 		}
 
