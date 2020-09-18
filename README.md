@@ -1,8 +1,9 @@
-Mattermost + clustering + Generic OAuth Support :)
+## Mattermost + clustering + Generic OAuth Support :)
 
-/oauth/<OAUTH_SERVICE>/token_login -> POST {"access_token":<TOKEN>} -> this returns a mattermost token if the user is present in the mattermost user table, or creates one and returns the token if the email address is from a trusted domain. Helps in programmatically logging in to the server when your token's are being managed by an openid server.
+    > /oauth/<OAUTH_SERVICE>/token_login -> POST {"access_token":<TOKEN>}
+   This endpoint returns a mattermost token if the user is present in the mattermost user table, or creates one and returns the token if the email address is from a trusted domain. Helps in programmatically logging in to the server when your token's are being managed by an openid server.
 Please note that the OAuth2.0 service that you are using must support the open_id scope so that the corresponding userinfo endpoint is accessible by the code.
-   
+   ```
    "OAuthSettings": {
         "<OAUTH_SERVICE>": {
             "Enable": true,
@@ -17,8 +18,10 @@ Please note that the OAuth2.0 service that you are using must support the open_i
             "UserApiEndpoint": "https://<OAUTH_SERVICE_ENDPOINT>/api/v4/user" //this is analogous to the userinfo endpoint in an openid server and must be configured correctly.
         }
     }
+  ```
 
 For enabling clustering, add the following in config.json, and set ClusterSettings.Enable to true.
+```
     "RedisSettings": {
         "Enable": false,
         "Address": "localhost:6379",
@@ -27,6 +30,7 @@ For enabling clustering, add the following in config.json, and set ClusterSettin
         "PoolSize": 100,
         "EnableRedisCluster": false
     }
+```
 
 Enjoy !!
 
