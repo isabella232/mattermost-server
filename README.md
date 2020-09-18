@@ -1,3 +1,35 @@
+Mattermost + clustering + Generic OAuth Support :)
+
+/oauth/<OAUTH_SERVICE>/token_login -> POST {"access_token":<TOKEN>} -> this returns a mattermost token if the user is present in the mattermost user table, or creates one and returns the token if the email address is from a trusted domain. Helps in programmatically logging in to the server when your token's are being managed by an openid server.
+Please note that the OAuth2.0 service that you are using must support the open_id scope so that the corresponding userinfo endpoint is accessible by the code.
+   
+   "OAuthSettings": {
+        "<OAUTH_SERVICE>": {
+            "Enable": true,
+            "Secret": "",
+            "TrustedDomain": "example.com",
+            "EmailField": "email",
+            "NameField": "name",
+            "Id": "",
+            "Scope": "api",
+            "AuthEndpoint": "https://<OAUTH_SERVICE_ENDPOINT>/oauth/authorize",
+            "TokenEndpoint": "https://<OAUTH_SERVICE_ENDPOINT>/oauth/token",
+            "UserApiEndpoint": "https://<OAUTH_SERVICE_ENDPOINT>/api/v4/user" //this is analogous to the userinfo endpoint in an openid server and must be configured correctly.
+        }
+    }
+
+For enabling clustering, add the following in config.json, and set ClusterSettings.Enable to true.
+    "RedisSettings": {
+        "Enable": false,
+        "Address": "localhost:6379",
+        "Password": null,
+        "Index": 0,
+        "PoolSize": 100,
+        "EnableRedisCluster": false
+    }
+
+Enjoy !!
+
 # [![Mattermost](https://user-images.githubusercontent.com/33878967/33095422-7c8aa7a4-ceb8-11e7-810a-4b261fdff6d6.png)](https://mattermost.org)
 
 Mattermost is an open source, private cloud, Slack-alternative from [https://mattermost.com](https://mattermost.com).
