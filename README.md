@@ -1,8 +1,8 @@
 ## Mattermost + clustering + Generic OAuth Support :)
 
     > /oauth/<OAUTH_SERVICE>/token_login -> POST {"access_token":<TOKEN>}
-   This endpoint returns a mattermost token if the user is present in the mattermost user table, or creates one and returns the token if the email address is from a trusted domain. Helps in programmatically logging in to the server when your token's are being managed by an openid server.
-Please note that the OAuth2.0 service that you are using must support the open_id scope so that the corresponding userinfo endpoint is accessible by the code.
+   This endpoint takes an access_token from an OAuth2.0 server as input and returns a mattermost token, if the user is present in the mattermost user table, or creates one and returns the token if the email address is from a trusted domain. Helps in programmatically logging in to the server when your tokens are being managed by an OAuth2.0 server.
+Please note that the OAuth2.0 service that you are using must support the openid scope so that the corresponding userinfo endpoint is accessible by the code.
    ```
    "OAuthSettings": {
         "<OAUTH_SERVICE>": {
