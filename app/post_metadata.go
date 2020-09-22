@@ -57,6 +57,7 @@ func (a *App) PreparePostListForClient(originalList *model.PostList) *model.Post
 
 	for id, originalPost := range originalList.Posts {
 		post := a.PreparePostForClient(originalPost, false, false)
+
 		list.Posts[id] = post
 	}
 
