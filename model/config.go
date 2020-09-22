@@ -316,6 +316,7 @@ type ServiceSettings struct {
 	EnablePostSearch                                  *bool  `restricted:"true"`
 	MinimumHashtagLength                              *int   `restricted:"true"`
 	EnableUserTypingMessages                          *bool  `restricted:"true"`
+	EnableChannelSystemMessages                       *bool  `restricted:"true"`
 	EnableChannelViewedMessages                       *bool  `restricted:"true"`
 	EnableUserStatuses                                *bool  `restricted:"true"`
 	ExperimentalEnableAuthenticationTransfer          *bool  `restricted:"true"`
@@ -381,6 +382,26 @@ func (s *ServiceSettings) SetDefaults(isUpdate bool) {
 
 	if s.EnableTesting == nil {
 		s.EnableTesting = NewBool(false)
+	}
+
+	if s.EnableUserRemovedBroadcast == nil {
+		s.EnableUserRemovedBroadcast = NewBool(false)
+	}
+
+	if s.EnableStatusChangeBroadcast == nil {
+		s.EnableStatusChangeBroadcast = NewBool(false)
+	}
+
+	if s.EnableUserAddedToTeamBroadcast == nil {
+		s.EnableUserAddedToTeamBroadcast = NewBool(false)
+	}
+
+	if s.EnableUserAddedToChannelBroadcast == nil {
+		s.EnableUserAddedToChannelBroadcast = NewBool(false)
+	}
+
+	if s.EnableChannelSystemMessages == nil {
+		s.EnableChannelSystemMessages = NewBool(true)
 	}
 
 	if s.EnableDeveloper == nil {
