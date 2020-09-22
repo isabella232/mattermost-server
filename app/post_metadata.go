@@ -57,9 +57,6 @@ func (a *App) PreparePostListForClient(originalList *model.PostList) *model.Post
 
 	for id, originalPost := range originalList.Posts {
 		post := a.PreparePostForClient(originalPost, false, false)
-		if *a.Config().ServiceSettings.EnableChannelSystemMessages == false && post.Type != "" {
-			continue
-		}
 		list.Posts[id] = post
 	}
 
