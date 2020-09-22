@@ -150,6 +150,9 @@ func (a *App) deduplicateCreatePost(post *model.Post) (foundPost *model.Post, er
 }
 
 func (a *App) CreatePost(post *model.Post, channel *model.Channel, triggerWebhooks, setOnline bool) (savedPost *model.Post, err *model.AppError) {
+	if *a.Config().ServiceSettings.EnableChannelSystemMessages == false && post.Type != "" {
+		return post, nil
+	}
 	foundPost, err := a.deduplicateCreatePost(post)
 	if err != nil {
 		return nil, err
