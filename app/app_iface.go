@@ -501,6 +501,7 @@ type AppIface interface {
 	GetAuthorizedAppsForUser(userId string, page, perPage int) ([]*model.OAuthApp, *model.AppError)
 	GetBrandImage() ([]byte, *model.AppError)
 	GetBulkReactionsForPosts(postIds []string) (map[string][]*model.Reaction, *model.AppError)
+	GetBulkReactionCountsForPosts(postIds []string) (map[string]int, *model.AppError)
 	GetChannel(channelId string) (*model.Channel, *model.AppError)
 	GetChannelByName(channelName, teamId string, includeDeleted bool) (*model.Channel, *model.AppError)
 	GetChannelByNameForTeamName(channelName, teamName string, includeDeleted bool) (*model.Channel, *model.AppError)

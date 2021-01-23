@@ -4,6 +4,7 @@
 package api4
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/mattermost/mattermost-server/v5/model"
@@ -14,6 +15,7 @@ func (api *API) InitReaction() {
 	api.BaseRoutes.Post.Handle("/reactions", api.ApiSessionRequired(getReactions)).Methods("GET")
 	api.BaseRoutes.ReactionByNameForPostForUser.Handle("", api.ApiSessionRequired(deleteReaction)).Methods("DELETE")
 	api.BaseRoutes.Posts.Handle("/ids/reactions", api.ApiSessionRequired(getBulkReactions)).Methods("POST")
+	api.BaseRoutes.Posts.Handle("/ids/reactioncounts", api.ApiSessionRequired(getBulkReactionCounts)).Methods("POST")
 }
 
 func saveReaction(c *Context, w http.ResponseWriter, r *http.Request) {
@@ -123,4 +125,22 @@ func getBulkReactions(c *Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte(model.MapPostIdToReactionsToJson(reactions)))
+}
+
+func getBulkReactionCounts(c *Context, w http.ResponseWriter, r *http.Request) {
+	postIds := model.ArrayFromJson(r.Body)
+	for _, postId := range postIds {
+		if !c.App.SessionHasPermissionToChannelByPost(*c.App.Session(), postId, model.PERMISSION_READ_CHANNEL) {
+			c.SetPermissionError(model.PERMISSION_READ_CHANNEL)
+			return
+		}
+	}
+	reactions, err := c.App.GetBulkReactionCountsForPosts(postIds)
+	if err != nil {
+		c.Err = err
+		return
+	}
+
+	k, _ := json.Marshal(reactions)
+	w.Write([]byte(string(k)))
 }

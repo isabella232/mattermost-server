@@ -88,6 +88,23 @@ func (a *App) GetBulkReactionsForPosts(postIds []string) (map[string][]*model.Re
 	return reactions, nil
 }
 
+func (a *App) GetBulkReactionCountsForPosts(postIds []string) (map[string]int, *model.AppError) {
+	reactions := make(map[string]int)
+
+	allReactions, err := a.Srv().Store.Reaction().BulkGetForPosts(postIds)
+	if err != nil {
+		return nil, model.NewAppError("GetBulkReactionsForPosts", "app.reaction.bulk_get_for_post_ids.app_error", nil, err.Error(), http.StatusInternalServerError)
+	}
+
+	for _, reaction := range allReactions {
+		if reaction.EmojiName == "thumbsup" {
+			reactions[reaction.PostId] = reactions[reaction.PostId] + 1
+		}
+	}
+
+	return reactions, nil
+}
+
 func populateEmptyReactions(postIds []string, reactions map[string][]*model.Reaction) map[string][]*model.Reaction {
 	for _, postId := range postIds {
 		if _, present := reactions[postId]; !present {
