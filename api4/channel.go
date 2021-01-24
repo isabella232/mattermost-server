@@ -630,6 +630,37 @@ func getChannelUnread(c *Context, w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(channelUnread.ToJson()))
 }
 
+func getChannelsUnread(c *Context, w http.ResponseWriter, r *http.Request) {
+	c.RequireUserId()
+	if c.Err != nil {
+		return
+	}
+
+	channelIds := model.ArrayFromJson(r.Body)
+
+	channelUnreads := make(map[string]string)
+	var channelUnreadList []map[string]string
+	for _, cid := range channelIds {
+		var member *model.ChannelMember
+		var err *model.AppError
+		member, err = c.App.GetChannelMember(cid, c.Params.UserId)
+		lastUnreadPostId, err := c.App.GetPostIdAfterTime(cid, member.LastViewedAt)
+
+		channelUnread, err := c.App.GetChannelUnread(cid, c.Params.UserId)
+		channelUnreads["MsgCount"] = string(channelUnread.MsgCount)
+		channelUnreads["Channel"] = string(cid)
+		channelUnreads["MentionCount"] = string(channelUnread.MentionCount)
+		channelUnreads["PostId"] = string(lastUnreadPostId)
+		channelUnreadList = append(channelUnreadList, channelUnreads)
+		if err != nil {
+			c.Err = err
+			return
+		}
+	}
+
+	w.Write([]byte(channelUnreadList))
+}
+
 func getChannelStats(c *Context, w http.ResponseWriter, r *http.Request) {
 	c.RequireChannelId()
 	if c.Err != nil {
