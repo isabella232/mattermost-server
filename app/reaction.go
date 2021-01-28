@@ -6,6 +6,7 @@ package app
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 )
@@ -52,7 +53,9 @@ func (a *App) SaveReactionForPost(reaction *model.Reaction) (*model.Reaction, *m
 	a.invalidateCacheForChannelPosts(post.ChannelId)
 
 	a.Srv().Go(func() {
-		a.sendReactionEvent(model.WEBSOCKET_EVENT_REACTION_ADDED, reaction, post, true)
+		if !strings.HasSuffix(channel.Name, "_polls") {
+			a.sendReactionEvent(model.WEBSOCKET_EVENT_REACTION_ADDED, reaction, post, true)
+		}
 	})
 
 	return reaction, nil
@@ -82,6 +85,23 @@ func (a *App) GetBulkReactionsForPosts(postIds []string) (map[string][]*model.Re
 	}
 
 	reactions = populateEmptyReactions(postIds, reactions)
+	return reactions, nil
+}
+
+func (a *App) GetBulkReactionCountsForPosts(postIds []string) (map[string]int, *model.AppError) {
+	reactions := make(map[string]int)
+
+	allReactions, err := a.Srv().Store.Reaction().BulkGetForPosts(postIds)
+	if err != nil {
+		return nil, model.NewAppError("GetBulkReactionsForPosts", "app.reaction.bulk_get_for_post_ids.app_error", nil, err.Error(), http.StatusInternalServerError)
+	}
+
+	for _, reaction := range allReactions {
+		if reaction.EmojiName == "thumbsup" {
+			reactions[reaction.PostId] = reactions[reaction.PostId] + 1
+		}
+	}
+
 	return reactions, nil
 }
 
@@ -133,7 +153,9 @@ func (a *App) DeleteReactionForPost(reaction *model.Reaction) *model.AppError {
 	a.invalidateCacheForChannelPosts(post.ChannelId)
 
 	a.Srv().Go(func() {
-		a.sendReactionEvent(model.WEBSOCKET_EVENT_REACTION_REMOVED, reaction, post, hasReactions)
+		if !strings.HasSuffix(channel.Name, "_polls") {
+			a.sendReactionEvent(model.WEBSOCKET_EVENT_REACTION_REMOVED, reaction, post, hasReactions)
+		}
 	})
 
 	return nil
