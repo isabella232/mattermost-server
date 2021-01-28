@@ -53,7 +53,7 @@ func (a *App) SaveReactionForPost(reaction *model.Reaction) (*model.Reaction, *m
 	a.invalidateCacheForChannelPosts(post.ChannelId)
 
 	a.Srv().Go(func() {
-		if !strings.HasSuffix(channel.Name, "_polls") {
+		if !strings.HasSuffix(channel.Name, "_poll") {
 			a.sendReactionEvent(model.WEBSOCKET_EVENT_REACTION_ADDED, reaction, post, true)
 		}
 	})
@@ -153,7 +153,7 @@ func (a *App) DeleteReactionForPost(reaction *model.Reaction) *model.AppError {
 	a.invalidateCacheForChannelPosts(post.ChannelId)
 
 	a.Srv().Go(func() {
-		if !strings.HasSuffix(channel.Name, "_polls") {
+		if !strings.HasSuffix(channel.Name, "_poll") {
 			a.sendReactionEvent(model.WEBSOCKET_EVENT_REACTION_REMOVED, reaction, post, hasReactions)
 		}
 	})
