@@ -642,14 +642,17 @@ func getChannelsUnread(c *Context, w http.ResponseWriter, r *http.Request) {
 	var channelUnreadList []map[string]string
 	for _, cid := range channelIds {
 		var member *model.ChannelMember
-		var err *model.AppError
-		member, err = c.App.GetChannelMember(cid, c.Params.UserId)
+]		var err *model.AppError
+		if member, err = c.App.GetChannelMember(cid, c.Params.UserId); err != nil {
+			return nil, err
+		}
+
 		lastUnreadPostID, err := c.App.GetPostIdAfterTime(cid, member.LastViewedAt)
 
 		channelUnread, err := c.App.GetChannelUnread(cid, c.Params.UserId)
-		channelUnreads["MsgCount"] = string(channelUnread.MsgCount)
+		channelUnreads["MsgCount"] = strconv.FormatInt(channelUnread.MsgCount, 10)
 		channelUnreads["Channel"] = string(cid)
-		channelUnreads["MentionCount"] = string(channelUnread.MentionCount)
+		channelUnreads["MentionCount"] = strconv.FormatInt(channelUnread.MentionCount, 10)
 		channelUnreads["PostId"] = string(lastUnreadPostID)
 		channelUnreadList = append(channelUnreadList, channelUnreads)
 		if err != nil {
