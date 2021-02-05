@@ -217,7 +217,7 @@ func (a *App) SetStatusOnline(userId string, manual bool) {
 	if broadcast {
 		a.BroadcastStatus(status)
 	}
-	if *a.Config().ServiceSettings.EnableStatusChangeBroadcast == true {
+	if *a.Config().ServiceSettings.EnableStatusChangeBroadcast == true && status.Status != oldStatus {
 		a.BroadcastStatusToTeam(status)
 	}
 }
