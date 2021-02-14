@@ -638,9 +638,9 @@ func getChannelsUnread(c *Context, w http.ResponseWriter, r *http.Request) {
 
 	channelIds := model.ArrayFromJson(r.Body)
 
-	channelUnreads := make(map[string]string)
 	var channelUnreadList []map[string]string
 	for _, cid := range channelIds {
+		channelUnreads := make(map[string]string)
 		var member *model.ChannelMember
 		var err *model.AppError
 		member, err = c.App.GetChannelMember(cid, c.Params.UserId)
