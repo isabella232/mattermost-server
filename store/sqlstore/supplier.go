@@ -343,7 +343,7 @@ func (ss *SqlSupplier) GetSearchReplica() *gorp.DbMap {
 }
 
 func (ss *SqlSupplier) GetReplica() *gorp.DbMap {
-	if len(ss.settings.DataSourceReplicas) == 0 || ss.lockedToMaster || ss.license == nil {
+	if len(ss.settings.DataSourceReplicas) == 0 || ss.lockedToMaster {
 		return ss.GetMaster()
 	}
 
