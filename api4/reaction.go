@@ -6,6 +6,7 @@ package api4
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 )
@@ -95,10 +96,16 @@ func deleteReaction(c *Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	emoji, emojiError := url.QueryUnescape(c.Params.EmojiName)
+	if emojiError != nil {
+		c.SetInvalidParam("EmojiName")
+		return
+	}
+
 	reaction := &model.Reaction{
 		UserId:    c.Params.UserId,
 		PostId:    c.Params.PostId,
-		EmojiName: c.Params.EmojiName,
+		EmojiName: emoji,
 	}
 
 	err := c.App.DeleteReactionForPost(reaction)
