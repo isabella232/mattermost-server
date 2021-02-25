@@ -6,7 +6,6 @@ package api4
 import (
 	"encoding/json"
 	"net/http"
-	"net/url"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 )
@@ -15,6 +14,7 @@ func (api *API) InitReaction() {
 	api.BaseRoutes.Reactions.Handle("", api.ApiSessionRequired(saveReaction)).Methods("POST")
 	api.BaseRoutes.Post.Handle("/reactions", api.ApiSessionRequired(getReactions)).Methods("GET")
 	api.BaseRoutes.ReactionByNameForPostForUser.Handle("", api.ApiSessionRequired(deleteReaction)).Methods("DELETE")
+	api.BaseRoutes.Reactions.Handle("/delete", api.ApiSessionRequired(deleteReactionPost)).Methods("POST")
 	api.BaseRoutes.Posts.Handle("/ids/reactions", api.ApiSessionRequired(getBulkReactions)).Methods("POST")
 	api.BaseRoutes.Posts.Handle("/ids/reactioncounts", api.ApiSessionRequired(getBulkReactionCounts)).Methods("POST")
 }
@@ -81,6 +81,11 @@ func deleteReaction(c *Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	c.RequireEmojiName()
+	if c.Err != nil {
+		return
+	}
+
 	if !c.App.SessionHasPermissionToChannelByPost(*c.App.Session(), c.Params.PostId, model.PERMISSION_REMOVE_REACTION) {
 		c.SetPermissionError(model.PERMISSION_REMOVE_REACTION)
 		return
@@ -91,16 +96,10 @@ func deleteReaction(c *Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	emoji, emojiError := url.QueryUnescape(c.Params.EmojiName)
-	if emojiError != nil {
-		c.SetInvalidParam("EmojiName")
-		return
-	}
-
 	reaction := &model.Reaction{
 		UserId:    c.Params.UserId,
 		PostId:    c.Params.PostId,
-		EmojiName: emoji,
+		EmojiName: c.Params.EmojiName,
 	}
 
 	err := c.App.DeleteReactionForPost(reaction)
@@ -112,6 +111,31 @@ func deleteReaction(c *Context, w http.ResponseWriter, r *http.Request) {
 	ReturnStatusOK(w)
 }
 
+func deleteReactionPost(c *Context, w http.ResponseWriter, r *http.Request) {
+	reaction := model.ReactionFromJson(r.Body)
+	if reaction == nil {
+		c.SetInvalidParam("reaction")
+		return
+	}
+
+	if !c.App.SessionHasPermissionToChannelByPost(*c.App.Session(), reaction.PostId, model.PERMISSION_REMOVE_REACTION) {
+		c.SetPermissionError(model.PERMISSION_REMOVE_REACTION)
+		return
+	}
+
+	if reaction.UserId != c.App.Session().UserId && !c.App.SessionHasPermissionTo(*c.App.Session(), model.PERMISSION_REMOVE_OTHERS_REACTIONS) {
+		c.SetPermissionError(model.PERMISSION_REMOVE_OTHERS_REACTIONS)
+		return
+	}
+
+	err := c.App.DeleteReactionForPost(reaction)
+	if err != nil {
+		c.Err = err
+		return
+	}
+
+	ReturnStatusOK(w)
+}
 func getBulkReactions(c *Context, w http.ResponseWriter, r *http.Request) {
 	postIds := model.ArrayFromJson(r.Body)
 	for _, postId := range postIds {
