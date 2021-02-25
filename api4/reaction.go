@@ -81,11 +81,6 @@ func deleteReaction(c *Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.RequireEmojiName()
-	if c.Err != nil {
-		return
-	}
-
 	if !c.App.SessionHasPermissionToChannelByPost(*c.App.Session(), c.Params.PostId, model.PERMISSION_REMOVE_REACTION) {
 		c.SetPermissionError(model.PERMISSION_REMOVE_REACTION)
 		return
