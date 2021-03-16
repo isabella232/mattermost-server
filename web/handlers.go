@@ -173,6 +173,8 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// All api response bodies will be JSON formatted by default
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
 
 		if r.Method == "GET" {
 			w.Header().Set("Expires", "0")
